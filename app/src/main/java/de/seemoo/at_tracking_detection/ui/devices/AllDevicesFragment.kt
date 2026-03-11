@@ -69,6 +69,12 @@ class AllDevicesFragment : Fragment() {
             findNavController().navigate(directions)
         }
 
+        view.findViewById<MaterialCardView>(R.id.safe_devices_card).setOnClickListener {
+            val directions: NavDirections =
+                AllDevicesFragmentDirections.actionNavigationAllDevicesFragmentToNavigationSafeDevicesFragment()
+            findNavController().navigate(directions)
+        }
+
         view.findViewById<MaterialCardView>(R.id.airtags_found_card).setOnClickListener {
             val directions = AllDevicesFragmentDirections.actionNavigationAllDevicesFragmentToDevicesFound2(showDevicesFound = true, showAllDevices = true, deviceType = DeviceType.AIRTAG)
             findNavController().navigate(directions)

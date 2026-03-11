@@ -35,6 +35,12 @@ interface DeviceDao {
     @Query("SELECT * FROM device WHERE `ignore` == 1 ORDER BY lastSeen DESC")
     fun getIgnoredSync(): List<BaseDevice>
 
+    @Query("SELECT * FROM device WHERE safeTracker == 1 ORDER BY lastSeen DESC")
+    fun getSafeTrackers(): Flow<List<BaseDevice>>
+
+    @Query("SELECT COUNT(*) FROM device WHERE safeTracker == 1")
+    fun getCountSafeTrackers(): Flow<Int>
+
     @Query("SELECT * FROM device WHERE address LIKE :address LIMIT 1")
     fun getByAddress(address: String): BaseDevice?
 
@@ -43,6 +49,9 @@ interface DeviceDao {
 
     @Query("UPDATE device SET `ignore` = :state WHERE address = :address")
     suspend fun setIgnoreFlag(address: String, state: Boolean)
+
+    @Query("UPDATE device SET safeTracker = :state WHERE address = :address")
+    suspend fun setSafeTrackerFlag(address: String, state: Boolean)
 
     @Query("SELECT COUNT(*) FROM device WHERE safeTracker == 0")
     fun getTotalCount(): Flow<Int>

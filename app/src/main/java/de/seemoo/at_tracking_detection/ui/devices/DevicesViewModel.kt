@@ -29,6 +29,11 @@ class DevicesViewModel @Inject constructor(
         updateDeviceList()
     }
 
+    fun setSafeTrackerFlag(deviceAddress: String, state: Boolean) = viewModelScope.launch {
+        deviceRepository.setSafeTrackerFlag(deviceAddress, state)
+        updateDeviceList()
+    }
+
     fun getDeviceBeaconsCount(deviceAddress: String): String =
         beaconRepository.getDeviceBeaconsCount(deviceAddress).toString()
 

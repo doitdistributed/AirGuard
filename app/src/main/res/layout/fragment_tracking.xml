@@ -229,6 +229,25 @@
                     bind:vm="@{vm}" />
 
                 <include
+                    android:id="@+id/tracking_mark_as_safe"
+                    layout="@layout/include_tracking_tile"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/card_margin"
+                    android:layout_weight="1"
+                    android:minHeight="@dimen/tracking_tile_height"
+                    android:onClick="@{() -> vm.toggleSafeTracker()}"
+                    android:visibility="@{vm.noLocationsYet ? View.GONE : View.VISIBLE}"
+                    bind:checkable="@{true}"
+                    bind:checked="@{vm.deviceSafeTracker}"
+                    bind:clickable="@{true}"
+                    bind:drawable="@{@drawable/ic_baseline_person_24}"
+                    bind:imageDescription="@{@string/tracking_mark_as_safe_title}"
+                    bind:subtitle="@{@string/tracking_mark_as_safe_subtitle}"
+                    bind:title="@{@string/tracking_mark_as_safe_title}"
+                    bind:vm="@{vm}" />
+
+                <include
                     android:id="@+id/tracking_false_alarm"
                     layout="@layout/include_tracking_tile"
                     android:layout_width="match_parent"

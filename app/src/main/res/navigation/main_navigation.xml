@@ -401,6 +401,22 @@
             app:popUpToSaveState="true" />
     </fragment>
 
+    <!-- Safe Devices (My Trackers) -->
+    <fragment
+        android:id="@+id/navigation_safeDevicesFragment"
+        android:name="de.seemoo.at_tracking_detection.ui.devices.SafeDevicesFragment"
+        android:label="@string/safe_devices" >
+        <action
+            android:id="@+id/action_navigation_safeDevicesFragment_to_trackingFragment"
+            app:destination="@id/trackingFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
+            app:popUpTo="@id/navigation_safeDevicesFragment"
+            app:popUpToSaveState="true" />
+    </fragment>
+
     <fragment
         android:id="@+id/debugScansFragment"
         android:name="de.seemoo.at_tracking_detection.ui.debug.DebugScansFragment"
@@ -414,6 +430,15 @@
         <action
             android:id="@+id/action_navigation_allDevicesFragment_to_navigation_ignoredDevicesFragment"
             app:destination="@id/navigation_ignoredDevicesFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
+            app:popUpTo="@id/navigation_allDevicesFragment"
+            app:popUpToSaveState="true" />
+        <action
+            android:id="@+id/action_navigation_allDevicesFragment_to_navigation_safeDevicesFragment"
+            app:destination="@id/navigation_safeDevicesFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/nav_default_exit_anim"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"

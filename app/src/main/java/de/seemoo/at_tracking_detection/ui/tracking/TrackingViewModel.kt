@@ -42,6 +42,7 @@ class TrackingViewModel @Inject constructor(
 
     val falseAlarm = MutableLiveData(false)
     val deviceIgnored = MutableLiveData(false)
+    val deviceSafeTracker = MutableLiveData(false)
     val trackerObserved = MutableLiveData(false)
 
     val soundPlaying = MutableLiveData(false)
@@ -89,6 +90,7 @@ class TrackingViewModel @Inject constructor(
                         LocalDateTime.now())
                     trackerObserved.postValue(deviceObserved)
                     deviceIgnored.postValue(dev.ignore)
+                    deviceSafeTracker.postValue(dev.safeTracker)
                     noLocationsYet.postValue(false)
                     connectable.postValue(dev.device is Connectable)
                     canBeIgnored.postValue(deviceType.value!!.canBeIgnored(ConnectionState.OVERMATURE_OFFLINE))
@@ -124,6 +126,17 @@ class TrackingViewModel @Inject constructor(
             }
             deviceIgnored.postValue(newState)
             Timber.d("Toggle ignore device - new State: $newState")
+        }
+    }
+
+    fun toggleSafeTracker() {
+        if (deviceAddress.value != null) {
+            val newState = !(deviceSafeTracker.value ?: false)
+            viewModelScope.launch {
+                deviceRepository.setSafeTrackerFlag(deviceAddress.value!!, newState)
+            }
+            deviceSafeTracker.postValue(newState)
+            Timber.d("Toggle safe tracker - new State: $newState")
         }
     }
 

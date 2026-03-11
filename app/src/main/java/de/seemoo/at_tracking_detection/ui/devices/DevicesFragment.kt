@@ -34,6 +34,7 @@ import de.seemoo.at_tracking_detection.ui.devices.filter.models.DeviceTypeFilter
 import de.seemoo.at_tracking_detection.ui.devices.filter.models.IgnoredFilter
 import de.seemoo.at_tracking_detection.ui.devices.filter.models.NotifiedFilter
 import de.seemoo.at_tracking_detection.ui.devices.filter.models.DateRangeFilter
+import de.seemoo.at_tracking_detection.ui.devices.filter.models.SafeTrackerFilter
 import de.seemoo.at_tracking_detection.ui.tracking.TrackingFragment
 import de.seemoo.at_tracking_detection.util.risk.RiskLevelEvaluator
 import timber.log.Timber
@@ -46,6 +47,7 @@ abstract class DevicesFragment(
     var showAllDevices: Boolean = false,
     var deviceType: DeviceType?=null,
     var deviceType2: DeviceType?=null,
+    var showSafeDevices: Boolean = false,
 ) : Fragment() {
 
     private val devicesViewModel: DevicesViewModel by viewModels()
@@ -67,7 +69,17 @@ abstract class DevicesFragment(
         var deviceInfoText = R.string.info_text_all_devices
 
 
-        if (!showDevicesFound) {
+        if (showSafeDevices) {
+            activity?.setTitle(R.string.title_safe_devices)
+            emptyListText = R.string.safe_device_list_empty
+            swipeDirs = ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+            devicesViewModel.addOrRemoveFilter(SafeTrackerFilter.build())
+            devicesViewModel.addOrRemoveFilter(
+                DeviceTypeFilter.build(
+                    DeviceManager.devices.map { it.deviceType }.toSet()
+                )
+            )
+        } else if (!showDevicesFound) {
             activity?.setTitle(R.string.title_ignored_devices)
             emptyListText = R.string.ignored_device_list_empty
             swipeDirs = ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
@@ -163,7 +175,17 @@ abstract class DevicesFragment(
 
 
     private fun updateTexts() {
-        if (devicesViewModel.activeFilter.containsKey(NotifiedFilter::class.toString())) {
+        if (devicesViewModel.activeFilter.containsKey(SafeTrackerFilter::class.toString())) {
+            // Only shows safe trackers (own devices)
+            (requireActivity() as AppCompatActivity).supportActionBar?.title =
+                getString(R.string.title_safe_devices)
+            devicesViewModel.emptyListText.value = getString(R.string.safe_device_list_empty)
+        } else if (devicesViewModel.activeFilter.containsKey(IgnoredFilter::class.toString())) {
+            // Only shows ignored devices
+            (requireActivity() as AppCompatActivity).supportActionBar?.title =
+                getString(R.string.title_ignored_devices)
+            devicesViewModel.emptyListText.value = getString(R.string.ignored_device_list_empty)
+        } else if (devicesViewModel.activeFilter.containsKey(NotifiedFilter::class.toString())) {
             // Only shows trackers
             (requireActivity() as AppCompatActivity).supportActionBar?.title =
                 getString(R.string.tracker_detected)
@@ -270,6 +292,15 @@ abstract class DevicesFragment(
                 devicesViewModel.setIgnoreFlag(baseDevice.address, false)
             }.show()
 
+            private fun showRestoreSafeDevice(baseDevice: BaseDevice) = Snackbar.make(
+                view!!, getString(
+                    R.string.devices_alter_removed, baseDevice.getDeviceNameWithID()
+                ), Snackbar.LENGTH_LONG
+            ).setAction(getString(R.string.undo_button)) {
+                Timber.d("Undo remove safe device!")
+                devicesViewModel.setSafeTrackerFlag(baseDevice.address, true)
+            }.show()
+
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val device =
                     deviceAdapter.currentList[viewHolder.bindingAdapterPosition]
@@ -298,6 +329,10 @@ abstract class DevicesFragment(
                             deviceAdapter.notifyItemChanged(viewHolder.bindingAdapterPosition)
                         }
                         .show()
+                } else if (direction == ItemTouchHelper.RIGHT && device.safeTracker) {
+                    devicesViewModel.setSafeTrackerFlag(device.address, false)
+                    showRestoreSafeDevice(device)
+                    Timber.d("Removed device ${device.address} from safe trackers list")
                 } else if (direction == ItemTouchHelper.RIGHT && device.ignore) {
                     devicesViewModel.setIgnoreFlag(device.address, false)
                     showRestoreDevice(device)

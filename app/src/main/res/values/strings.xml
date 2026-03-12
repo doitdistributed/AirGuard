@@ -484,6 +484,10 @@
     <string name="export_trackers_tracker_type">Tracker Type: %s</string>
     <string name="export_trackers_mac">MAC Address: %s</string>
     <string name="export_trackers_identifier">Identifier: %s</string>
+    <string name="identifier_row_label">Identifier</string>
+    <string name="identifier_row_mac_label">MAC Address</string>
+    <string name="copy_identifier_description">Copy identifier to clipboard</string>
+    <string name="identifier_copied">Identifier copied to clipboard</string>
     <string name="export_trackers_last_seen">Last Seen: %s</string>
     <string name="export_trackers_first_seen">First Seen: %s</string>
     <string name="export_trackers_detections">Detections: %d</string>

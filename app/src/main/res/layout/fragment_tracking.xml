@@ -367,10 +367,73 @@
                 android:autoSizeTextType="uniform"
                 android:text="@string/tracking_info"
                 android:visibility="@{vm.showNfcHint ? View.VISIBLE : View.GONE}"
-                app:layout_constraintBottom_toTopOf="@id/identifier_explanation"
+                app:layout_constraintBottom_toTopOf="@id/identifier_card"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/last_seen_times_layout" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/identifier_card"
+                style="?attr/materialCardViewElevatedStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                android:visibility="@{vm.deviceIdentifier != null ? View.VISIBLE : View.GONE}"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tracking_scan_airtag_text"
+                app:layout_constraintBottom_toTopOf="@id/identifier_explanation">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="4dp"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/identifier_label_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?attr/textAppearanceLabelSmall"
+                            android:textColor="?android:textColorSecondary"
+                            tools:text="Identifier" />
+
+                        <TextView
+                            android:id="@+id/identifier_value_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:fontFamily="monospace"
+                            android:textAppearance="?attr/textAppearanceBodySmall"
+                            android:text="@{vm.deviceIdentifier}"
+                            tools:text="a1b2c3d4e5f60708090a0b0c0d0e0f10" />
+
+                    </LinearLayout>
+
+                    <ImageButton
+                        android:id="@+id/identifier_copy_button"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="@string/copy_identifier_description"
+                        android:padding="12dp"
+                        app:srcCompat="@drawable/ic_baseline_content_copy_24"
+                        app:tint="?attr/colorOnSurface" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
             <TextView
                 android:id="@+id/identifier_explanation"
@@ -385,7 +448,7 @@
                 app:layout_constraintBottom_toTopOf="@id/additional_tiles"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tracking_scan_airtag_text" />
+                app:layout_constraintTop_toBottomOf="@id/identifier_card" />
 
             <LinearLayout
                 android:id="@+id/additional_tiles"

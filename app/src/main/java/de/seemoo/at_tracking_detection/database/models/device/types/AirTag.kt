@@ -121,6 +121,13 @@ class AirTag(val id: Int) : Device(), Connectable {
             UUID.fromString("7DFC9001-7D1C-4951-86AA-8D9728F8D66C")
         private const val AIR_TAG_EVENT_CALLBACK = 0x302
 
+        /**
+         * Byte offset in the Apple Find My manufacturer data (company ID 0x4C) where the rotating
+         * public key payload begins. Bytes 0–2 are type (0x12), length (0x19), and status; the key
+         * starts at byte 3.
+         */
+        private const val FIND_MY_ADV_KEY_OFFSET = 3
+
         override val bluetoothFilter: ScanFilter
             get() = ScanFilter.Builder()
                 .setManufacturerData(
@@ -185,14 +192,14 @@ class AirTag(val id: Int) : Device(), Connectable {
             try {
                 val mfg: ByteArray? = scanResult.scanRecord?.getManufacturerSpecificData(0x4C)
                 // Bytes 0-2: type (0x12), length (0x19), status — skip them.
-                // Bytes 3+: rotating public key payload.
+                // Bytes FIND_MY_ADV_KEY_OFFSET+: rotating public key payload.
                 // In the standard offline-finding advertisement this is 22 bytes (bytes 3–24),
                 // giving a total manufacturer data length of 25 bytes. We accept any length > 3
                 // so that minor variations in the advertisement format (e.g. Find My accessories
                 // that advertise fewer key bytes) are still captured. The full slice is used as
                 // the identifier so payloads of different lengths cannot collide.
-                if (mfg != null && mfg.size > 3) {
-                    return mfg.sliceArray(3 until mfg.size)
+                if (mfg != null && mfg.size > FIND_MY_ADV_KEY_OFFSET) {
+                    return mfg.sliceArray(FIND_MY_ADV_KEY_OFFSET until mfg.size)
                         .joinToString("") { "%02x".format(it) }
                 }
             } catch (e: Exception) {

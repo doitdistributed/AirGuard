@@ -26,12 +26,10 @@ class DevicesViewModel @Inject constructor(
 
     fun setIgnoreFlag(deviceAddress: String, state: Boolean) = viewModelScope.launch {
         deviceRepository.setIgnoreFlag(deviceAddress, state)
-        updateDeviceList()
     }
 
     fun setSafeTrackerFlag(deviceAddress: String, state: Boolean) = viewModelScope.launch {
         deviceRepository.setSafeTrackerFlag(deviceAddress, state)
-        updateDeviceList()
     }
 
     fun getDeviceBeaconsCount(deviceAddress: String): String =
@@ -58,23 +56,25 @@ class DevicesViewModel @Inject constructor(
         updateFilterSummaryText()
     }
 
-    private fun updateDeviceList() {
-        devices.addSource(deviceRepository.devices.asLiveData()) {
-            var filteredDevices = it
-            activeFilter.forEach { (_, filter) ->
-                filteredDevices = filter.apply(filteredDevices)
-            }
-            devices.value = filteredDevices
+    private fun applyFilters(list: List<BaseDevice>): List<BaseDevice> {
+        var filtered = list
+        activeFilter.forEach { (_, filter) ->
+            filtered = filter.apply(filtered)
         }
+        return filtered
     }
+
+    private fun updateDeviceList() {
+        allDevices.value?.let { devices.value = applyFilters(it) }
+    }
+
+    private val allDevices = deviceRepository.devices.asLiveData()
 
     val devices = MediatorLiveData<List<BaseDevice>>()
 
     init {
-        devices.addSource(deviceRepository.devices.asLiveData()) {
-            if (activeFilter.isEmpty()) {
-                devices.value = it
-            }
+        devices.addSource(allDevices) { list ->
+            devices.value = applyFilters(list)
         }
     }
 

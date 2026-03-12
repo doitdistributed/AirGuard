@@ -15,6 +15,12 @@
         android:title="@string/title_scan" />
 
     <item
+        android:id="@+id/navigation_safeDevicesFragment"
+        android:contentDescription="@string/title_devices"
+        android:icon="@drawable/ic_baseline_admin_panel_settings_24"
+        android:title="@string/title_devices" />
+
+    <item
         android:id="@+id/navigation_allDevicesFragment"
         android:contentDescription="@string/title_devices"
         android:icon="@drawable/ic_baseline_list_24"

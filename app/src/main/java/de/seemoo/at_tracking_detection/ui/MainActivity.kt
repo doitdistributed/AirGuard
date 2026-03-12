@@ -86,6 +86,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         val appBarItems: Set<Int> = setOf(
             R.id.navigation_dashboard,
             R.id.navigation_manual_scan,
+            R.id.navigation_safeDevicesFragment,
             R.id.navigation_allDevicesFragment,
             R.id.navigation_settings
         )
@@ -109,6 +110,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
             when (it.itemId) {
                 R.id.navigation_dashboard -> navController.navigate(R.id.navigation_dashboard, args=null, navOptions = navOptions)
                 R.id.navigation_manual_scan -> navController.navigate(R.id.navigation_manual_scan, args=null, navOptions = navOptions)
+                R.id.navigation_safeDevicesFragment -> navController.navigate(R.id.navigation_safeDevicesFragment, args=null, navOptions = navOptions)
                 R.id.navigation_allDevicesFragment -> navController.navigate(R.id.navigation_allDevicesFragment, args=null, navOptions = navOptions)
                 R.id.navigation_settings -> navController.navigate(R.id.navigation_settings, args=null, navOptions = navOptions)
                 R.id.navigation_debug -> navController.navigate(R.id.navigation_debug, args=null, navOptions = navOptions)

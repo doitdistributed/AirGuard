@@ -83,22 +83,11 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         val navController = navHostFragment.navController
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
-        val appBarItems: Set<Int> = setOf(
-            R.id.navigation_dashboard,
+        val appBarItems = setOf(
             R.id.navigation_manual_scan,
             R.id.navigation_safeDevicesFragment,
-            R.id.navigation_allDevicesFragment,
             R.id.navigation_settings
         )
-        if (BuildConfig.DEBUG) {
-            appBarItems.plus(R.id.navigation_debug)
-        }
-
-        if (!SharedPrefs.advancedMode) {
-            val menu = navView.menu
-            val item = menu.findItem(R.id.navigation_allDevicesFragment)
-            item.isVisible = false
-        }
 
         val appBarConfiguration = AppBarConfiguration(appBarItems)
         setupActionBarWithNavController(navController, appBarConfiguration)
@@ -108,12 +97,9 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
 
         navView.setOnItemSelectedListener {
             when (it.itemId) {
-                R.id.navigation_dashboard -> navController.navigate(R.id.navigation_dashboard, args=null, navOptions = navOptions)
                 R.id.navigation_manual_scan -> navController.navigate(R.id.navigation_manual_scan, args=null, navOptions = navOptions)
                 R.id.navigation_safeDevicesFragment -> navController.navigate(R.id.navigation_safeDevicesFragment, args=null, navOptions = navOptions)
-                R.id.navigation_allDevicesFragment -> navController.navigate(R.id.navigation_allDevicesFragment, args=null, navOptions = navOptions)
                 R.id.navigation_settings -> navController.navigate(R.id.navigation_settings, args=null, navOptions = navOptions)
-                R.id.navigation_debug -> navController.navigate(R.id.navigation_debug, args=null, navOptions = navOptions)
             }
             return@setOnItemSelectedListener true
         }
@@ -222,14 +208,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
-        // Check if the changed preference is the advancedMode
-        if (key == "advanced_mode") {
-            // Update the visibility of the All Devices fragment menu item
-            val navView: BottomNavigationView = findViewById(R.id.main_nav_view)
-            val menu = navView.menu
-            val item = menu.findItem(R.id.navigation_allDevicesFragment)
-            item.isVisible = sharedPreferences?.getBoolean(key, false) ?: false
-        } else if (key == "prevent_screenshots") {
+        if (key == "prevent_screenshots") {
             // Update the FLAG_SECURE when the setting changes
             updateSecureFlag()
         }

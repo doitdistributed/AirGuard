@@ -19,9 +19,12 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
+import androidx.navigation.NavOptions
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import de.seemoo.at_tracking_detection.R
@@ -165,6 +168,23 @@ abstract class DevicesFragment(
                     DeviceManager.devices.map { it.deviceType }.toSet()
                 )
             )
+        }
+
+        // Show "+" FAB only on the safe devices (My Trackers) screen so users can
+        // quickly navigate to Scan to add a new known tracker (like Apple Find My's "+ Add New Item")
+        val addTrackerFab = view.findViewById<FloatingActionButton>(R.id.add_safe_tracker_fab)
+        val scanNavOptions = NavOptions.Builder()
+            .setPopUpTo(R.id.main_navigation, inclusive = true, saveState = false)
+            .setLaunchSingleTop(true)
+            .build()
+        if (showSafeDevices) {
+            addTrackerFab.visibility = View.VISIBLE
+            showAllButton.visibility = View.INVISIBLE
+            addTrackerFab.setOnClickListener {
+                findNavController().navigate(R.id.navigation_manual_scan, null, scanNavOptions)
+            }
+        } else {
+            addTrackerFab.visibility = View.GONE
         }
 
         //Adding the Filter fragment to the view

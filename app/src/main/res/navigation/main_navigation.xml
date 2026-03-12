@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_navigation"
-    app:startDestination="@id/navigation_dashboard">
+    app:startDestination="@id/navigation_manual_scan">
 
     <!-- Feedback -->
     <fragment
@@ -84,6 +84,10 @@
         <action
             android:id="@+id/action_settings_to_old_device_cleanup"
             app:destination="@id/old_device_cleanup"
+            />
+        <action
+            android:id="@+id/action_settings_to_debug"
+            app:destination="@id/navigation_debug"
             />
     </fragment>
 

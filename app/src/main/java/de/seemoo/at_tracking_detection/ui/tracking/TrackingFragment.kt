@@ -188,9 +188,14 @@ class TrackingFragment : Fragment() {
 
         val copyIdentifierToClipboard = View.OnClickListener {
             val identifier = trackingViewModel.deviceIdentifier.value ?: return@OnClickListener
+            val labelRes = when (trackingViewModel.deviceType.value) {
+                DeviceType.AIRTAG, DeviceType.FIND_MY -> R.string.identifier_row_label
+                else -> R.string.identifier_row_mac_label
+            }
+            val label = getString(labelRes)
             val clipboard = requireContext().getSystemService(Context.CLIPBOARD_SERVICE)
                     as ClipboardManager
-            val clip = ClipData.newPlainText("Device Identifier", identifier)
+            val clip = ClipData.newPlainText(label, identifier)
             clipboard.setPrimaryClip(clip)
             Snackbar.make(requireView(), getString(R.string.identifier_copied), Snackbar.LENGTH_SHORT).show()
         }

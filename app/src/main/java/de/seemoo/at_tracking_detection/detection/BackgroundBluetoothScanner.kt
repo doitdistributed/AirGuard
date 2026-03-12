@@ -584,6 +584,10 @@ object BackgroundBluetoothScanner {
                                     device.lastSeen = discoveryDate
                                     // Keep the stored alternativeIdentifier — it is the same key that
                                     // matched, so no update is needed here.
+                                    // Sync connection-state so getDeviceWithRecentBeacon() can
+                                    // re-identify this device in future time-window lookups.
+                                    val newAdditionalData = Utility.connectionStateToString(wrappedScanResult.connectionState)
+                                    device.additionalData = newAdditionalData
                                     deviceRepository.update(device)
                                     return@withLock device
                                 }
@@ -618,6 +622,9 @@ object BackgroundBluetoothScanner {
                                 if (alternativeIdentifier != null) {
                                     device.alternativeIdentifier = alternativeIdentifier
                                 }
+                                // Sync connection-state so getDeviceWithRecentBeacon() can
+                                // re-identify this device in future time-window lookups.
+                                device.additionalData = connectionStateString
                                 deviceRepository.update(device)
                                 return@withLock device
                             }
@@ -741,6 +748,10 @@ object BackgroundBluetoothScanner {
                         if (newKey != null) {
                             device.alternativeIdentifier = newKey
                         }
+                        // Sync connection-state so getDeviceWithRecentBeacon() can
+                        // re-identify this device in future time-window lookups.
+                        val newAdditionalData = Utility.connectionStateToString(wrappedScanResult.connectionState)
+                        device.additionalData = newAdditionalData
                     }
                     deviceRepository.update(device)
                 }

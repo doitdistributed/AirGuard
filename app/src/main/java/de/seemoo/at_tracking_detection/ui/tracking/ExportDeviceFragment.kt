@@ -403,7 +403,14 @@ class ExportDeviceFragment: Fragment() {
             canvas.drawText(getString(R.string.export_trackers_tracker_type, deviceTypeStr), MARGIN, yPos, textPaint)
             yPos += NORMAL_LINE_HEIGHT
             if (device.deviceType != DeviceType.SAMSUNG_TRACKER && device.deviceType != DeviceType.SAMSUNG_FIND_MY_MOBILE) {
-                canvas.drawText(getString(R.string.export_trackers_mac, device.address), MARGIN, yPos, textPaint)
+                if (device.deviceType == DeviceType.AIRTAG || device.deviceType == DeviceType.FIND_MY) {
+                    // Prefer the advertisement key; fall back to address when key was not captured
+                    // (e.g. device was connected to its owner during the scan).
+                    val displayId = device.alternativeIdentifier ?: device.address
+                    canvas.drawText(getString(R.string.export_trackers_identifier, displayId), MARGIN, yPos, textPaint)
+                } else {
+                    canvas.drawText(getString(R.string.export_trackers_mac, device.address), MARGIN, yPos, textPaint)
+                }
                 yPos += NORMAL_LINE_HEIGHT
             }
             canvas.drawText(getString(R.string.export_trackers_first_seen, firstSeenDate), MARGIN, yPos, textPaint)

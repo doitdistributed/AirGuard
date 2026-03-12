@@ -40,7 +40,8 @@ import kotlin.experimental.and
         Index(value = ["address"], unique = true),
         Index(value = ["notificationSent"]),
         Index(value = ["deviceType"]),
-        Index(value = ["lastSeen", "deviceType"])
+        Index(value = ["lastSeen", "deviceType"]),
+        Index(value = ["alternativeIdentifier"])
     ]
 )
 @TypeConverters(DateTimeConverter::class)

@@ -200,7 +200,7 @@ class AirTag(val id: Int) : Device(), Connectable {
                 // the identifier so payloads of different lengths cannot collide.
                 if (mfg != null && mfg.size > FIND_MY_ADV_KEY_OFFSET) {
                     return mfg.sliceArray(FIND_MY_ADV_KEY_OFFSET until mfg.size)
-                        .joinToString("") { "%02x".format(it) }
+                        .joinToString("") { "%02x".format(it.toInt() and 0xFF) }
                 }
             } catch (e: Exception) {
                 Timber.e(e, "Error extracting alternative identifier for Apple device")

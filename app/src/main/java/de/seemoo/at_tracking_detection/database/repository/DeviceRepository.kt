@@ -45,6 +45,8 @@ class DeviceRepository @Inject constructor(private val deviceDao: DeviceDao) {
 
     val ignoredDevicesSync: List<BaseDevice> = deviceDao.getIgnoredSync()
 
+    val countSafeTrackers: Flow<Int> = deviceDao.getCountSafeTrackers()
+
     fun getDevice(deviceAddress: String): BaseDevice? = deviceDao.getByAddress(deviceAddress)
 
     fun observeDevice(deviceAddress: String): Flow<BaseDevice?> = deviceDao.observeByAddress(deviceAddress)
@@ -101,6 +103,11 @@ class DeviceRepository @Inject constructor(private val deviceDao: DeviceDao) {
     @WorkerThread
     suspend fun setIgnoreFlag(deviceAddress: String, state: Boolean) {
         deviceDao.setIgnoreFlag(deviceAddress, state)
+    }
+
+    @WorkerThread
+    suspend fun setSafeTrackerFlag(deviceAddress: String, state: Boolean) {
+        deviceDao.setSafeTrackerFlag(deviceAddress, state)
     }
 
     @WorkerThread

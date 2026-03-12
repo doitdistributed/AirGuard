@@ -3,6 +3,7 @@
     <string name="app_name">AirGuard</string>
 
     <string name="title_ignored_devices">Ignored</string>
+    <string name="title_safe_devices">My Trackers</string>
     <string name="title_dashboard">Home</string>
     <string name="title_settings">Settings</string>
     <string name="title_debug">Debug</string>
@@ -43,6 +44,7 @@
     <string name="devices_swipe">Swipe to remove</string>
     <string name="devices_list_empty">Whenever the app detects an AirTag or another tracking device, they will be listed here. The list will likely contain devices that did not track you. For devices that track you, you will receive a notification.</string>
     <string name="ignored_device_list_empty">Whenever you receive a notification for being tracked by a known device (e.g. an AirTag you own), you can mark them as a false alarm. Devices which do not change their Bluetooth address (e.g. Tile, Chipolo, Pebblebee) can also be ignored. These devices will be listed here. Remember: An AirTag changes its Bluetooth address once a day, so even if you mark it as a false alarm it becomes a new entry after a day.</string>
+    <string name="safe_device_list_empty">You can mark any detected tracker as your own device. These trackers will not trigger alerts as long as they keep the same Bluetooth address and will be listed here. Remember: Some trackers (e.g. AirTag) change their Bluetooth address regularly, so even if you mark them as your own device they may appear as new entries and can trigger alerts again. Open a tracker\'s details and tap "Mark as My Tracker" to add it to this list.</string>
     <string name="settings_use_location_summary">If enabled, more detailed tracking information can be provided when being tracked.</string>
     <string name="settings_use_location_title">Use Location</string>
     <string name="error_requesting_location_permission">Error requesting background Location permission</string>
@@ -57,6 +59,8 @@
     <string name="tracking_detail_scan_subtitle">Shows live Information about this tracker</string>
     <string name="tracking_ignore_device_title">Ignore Device</string>
     <string name="tracking_ignore_device_subtitle">Mute notifications for this device</string>
+    <string name="tracking_mark_as_safe_title">Mark as My Tracker</string>
+    <string name="tracking_mark_as_safe_subtitle">Mark this as your own tracker to prevent false alerts</string>
     <string name="tracking_false_alarm_title">False Alarm</string>
     <string name="tracking_false_alarm_subtitle">Mark this notification as false alarm</string>
     <string name="tracking_missing_beacons_info">Some beacons were captured without any location data and are therefore not displayed.</string>
@@ -278,6 +282,7 @@
     <string name="settings_use_low_power_ble_title">Low Power Scan Mode</string>
     <string name="settings_send_bluetooth_error_messages">Send Bluetooth Error Messages</string>
     <string name="ignored_devices">Ignored devices</string>
+    <string name="safe_devices">My Trackers</string>
     <string name="airtags_found">AirTags found</string>
     <string name="findmy_found">Apple Find My Devices found</string>
     <string name="tile_found">Tiles found</string>

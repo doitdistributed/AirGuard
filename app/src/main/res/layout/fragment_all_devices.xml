@@ -65,6 +65,43 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="22dp">
+
+                <include
+                    android:id="@+id/safe_devices_card"
+                    layout="@layout/include_number_card"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:cardBackgroundColorInt="@{@color/green_card_background}"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintWidth_percent="0.48"
+                    app:layout_constraintDimensionRatio="1:1"
+                    app:cardName="@{@string/safe_devices}"
+                    app:cardNumber="@{viewModel.countSafeTrackers}" />
+
+                <include
+                    android:id="@+id/all_devices_card"
+                    layout="@layout/include_number_card"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="8dp"
+                    app:cardBackgroundColorInt="@{@color/blue_card_background}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintWidth_percent="0.48"
+                    app:layout_constraintDimensionRatio="1:1"
+                    app:cardName="@{@string/all_devices_found}"
+                    app:cardNumber="@{viewModel.countNotTracking}"
+                    />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -197,21 +234,6 @@
                     app:cardNumber="@{viewModel.CountPebblebee}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintWidth_percent="0.48"
-                    app:layout_constraintDimensionRatio="1:1"
-                    />
-
-                <include
-                    android:id="@+id/all_devices_card"
-                    layout="@layout/include_number_card"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    app:cardBackgroundColorInt="@{@color/blue_card_background}"
-                    app:cardName="@{@string/all_devices_found}"
-                    app:cardNumber="@{viewModel.countNotTracking}"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintWidth_percent="0.48"
                     app:layout_constraintDimensionRatio="1:1"

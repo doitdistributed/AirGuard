@@ -20,6 +20,7 @@ class AllDevicesViewModel @Inject constructor(
 
     val countNotTracking = deviceRepository.countNotTracking.asLiveData()
     val countIgnored = deviceRepository.countIgnored.asLiveData()
+    val countSafeTrackers = deviceRepository.countSafeTrackers.asLiveData()
     val countTracking = deviceRepository.trackingDevicesNotIgnoredSinceCount(RiskLevelEvaluator.relevantTrackingDateForRiskCalculation).asLiveData()
 
     val countAirTags = deviceRepository.countForDeviceType(DeviceType.AIRTAG).asLiveData()

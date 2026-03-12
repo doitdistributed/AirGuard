@@ -144,19 +144,41 @@ object Utility {
     }
 
     /**
-     * Opens an external navigation app (e.g. Google Maps) with directions to the given coordinates.
-     * Falls back to a Google Maps web URL if no navigation app is installed.
+     * Opens an external navigation/maps app at the given coordinates.
+     * Uses the standard `geo:` URI scheme (handled by Google Maps, Waze, OsmAnd, etc.).
+     * Falls back to a Google Maps directions web URL if no app handles the intent.
+     * Adds FLAG_ACTIVITY_NEW_TASK when the context is not an Activity so the call is
+     * safe from application-context callers.
      */
     fun openNavigationToLocation(context: Context, latitude: Double, longitude: Double) {
+        val needsNewTask = context !is android.app.Activity
+
         val uri = "geo:$latitude,$longitude?q=$latitude,$longitude".toUri()
-        val intent = Intent(Intent.ACTION_VIEW, uri)
+        val intent = Intent(Intent.ACTION_VIEW, uri).apply {
+            if (needsNewTask) addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+
         try {
             context.startActivity(intent)
         } catch (e: ActivityNotFoundException) {
-            Timber.w("No navigation app found, falling back to browser")
-            val webUri = "https://maps.google.com/maps?daddr=$latitude,$longitude".toUri()
-            val webIntent = Intent(Intent.ACTION_VIEW, webUri)
-            context.startActivity(webIntent)
+            Timber.w("No navigation app found, falling back to browser maps directions")
+            val webUri = "https://maps.google.com/maps/dir/?api=1&destination=$latitude,$longitude".toUri()
+            val webIntent = Intent(Intent.ACTION_VIEW, webUri).apply {
+                if (needsNewTask) addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            try {
+                context.startActivity(webIntent)
+            } catch (e2: ActivityNotFoundException) {
+                Timber.e("No browser available to open navigation fallback")
+                val activity = ATTrackingDetectionApplication.getCurrentActivity()
+                if (activity != null) {
+                    Snackbar.make(
+                        activity.findViewById(android.R.id.content),
+                        activity.getString(R.string.no_browser),
+                        Snackbar.LENGTH_LONG
+                    ).show()
+                }
+            }
         }
     }
 

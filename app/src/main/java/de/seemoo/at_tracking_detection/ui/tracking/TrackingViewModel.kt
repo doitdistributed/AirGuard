@@ -19,6 +19,7 @@ import timber.log.Timber
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
+import java.util.UUID
 import javax.inject.Inject
 import androidx.core.net.toUri
 
@@ -130,11 +131,36 @@ class TrackingViewModel @Inject constructor(
     }
 
     fun toggleSafeTracker() {
-        if (deviceAddress.value != null) {
-            val newState = !(deviceSafeTracker.value ?: false)
-            viewModelScope.launch {
-                deviceRepository.setSafeTrackerFlag(deviceAddress.value!!, newState)
+        val address = deviceAddress.value ?: return
+        val newState = !(deviceSafeTracker.value ?: false)
+        viewModelScope.launch {
+            if (device.value == null) {
+                // Device not yet in the database (e.g. opened from a live scan result).
+                // Create a minimal entry so the flag can be persisted.
+                val now = LocalDateTime.now()
+                val newDevice = BaseDevice(
+                    deviceId = 0,
+                    uniqueId = UUID.randomUUID().toString(),
+                    address = address,
+                    name = null,
+                    ignore = false,
+                    connectable = null, // unknown — prevents participation in connectable-based device matching
+                    payloadData = null,
+                    firstDiscovery = now,
+                    lastSeen = now,
+                    notificationSent = false,
+                    lastNotificationSent = null,
+                    deviceType = deviceType.value ?: DeviceType.UNKNOWN,
+                    riskLevel = 0,
+                    lastCalculatedRiskDate = now,
+                    nextObservationNotification = null,
+                    currentObservationDuration = null,
+                    additionalData = null,
+                )
+                deviceRepository.insert(newDevice)
+                Timber.d("Created device entry for $address before toggling safe-tracker flag")
             }
+            deviceRepository.setSafeTrackerFlag(address, newState)
             deviceSafeTracker.postValue(newState)
             Timber.d("Toggle safe tracker - new State: $newState")
         }

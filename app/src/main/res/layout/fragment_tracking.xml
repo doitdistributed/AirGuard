@@ -253,7 +253,7 @@
                     android:layout_weight="1"
                     android:minHeight="@dimen/tracking_tile_height"
                     android:onClick="@{() -> vm.toggleSafeTracker()}"
-                    android:visibility="@{vm.noLocationsYet ? View.GONE : View.VISIBLE}"
+                    android:visibility="@{vm.deviceAddress == null ? View.GONE : View.VISIBLE}"
                     bind:checkable="@{true}"
                     bind:checked="@{vm.deviceSafeTracker}"
                     bind:clickable="@{true}"

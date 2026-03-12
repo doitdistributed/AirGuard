@@ -199,7 +199,9 @@ data class BaseDevice(
 
         fun getAdditionalData(scanResult: ScanResult, deviceType: DeviceType = DeviceManager.getDeviceType(scanResult)): String? {
             return when (deviceType) {
-                DeviceType.GOOGLE_FIND_MY_NETWORK -> Utility.connectionStateToString(ScanResultWrapper(scanResult).connectionState)
+                DeviceType.GOOGLE_FIND_MY_NETWORK,
+                DeviceType.AIRTAG,
+                DeviceType.FIND_MY -> Utility.connectionStateToString(ScanResultWrapper(scanResult).connectionState)
                 else -> null
             }
         }

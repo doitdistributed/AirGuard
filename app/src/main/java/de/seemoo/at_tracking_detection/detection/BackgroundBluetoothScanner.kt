@@ -414,6 +414,12 @@ object BackgroundBluetoothScanner {
                 if (wrappedScanResult.connectionState !in DeviceManager.unsafeConnectionState && wrappedScanResult.deviceType in DeviceManager.savedDeviceTypesWith15MinuteAlgorithm && wrappedScanResult.connectionState in DeviceManager.savedConnectionStatesWith15MinuteAlgorithm){
                     Timber.d("Device ${wrappedScanResult.uniqueIdentifier} ${wrappedScanResult.deviceType} ${wrappedScanResult.connectionState} is in a saved connection state for the 15 Minute Algorithm!")
                     overrideIdentifier = deviceSaved.address
+                } else if (deviceSaved.matchedUsing15MinAlgo && wrappedScanResult.deviceType in DeviceManager.appleDeviceTypesWithRotatingIdentifier) {
+                    // Apple device was matched to a previous entry via the rotating identifier algorithm.
+                    // Use the saved device's address so that beacons are correctly associated with the
+                    // original device entry rather than the rotated MAC address.
+                    Timber.d("Apple device matched via rotating identifier algorithm! Using saved device's address for beacon.")
+                    overrideIdentifier = deviceSaved.address
                 }
 
                 val beaconSaved = saveBeacon(wrappedScanResult, discoveryDate, locId, overrideIdentifier) ?: return@withLock Pair(null, null)
@@ -556,6 +562,36 @@ object BackgroundBluetoothScanner {
                                     deviceRepository.update(device)
                                     return@withLock device
                                 }
+                            }
+                        }
+
+                        // Apple AirTag and Find My accessories rotate their BLE MAC address and
+                        // advertisement key every ~15 minutes. Use a time-window based algorithm
+                        // (similar to Samsung non-strict) to re-identify them across rotations.
+                        if (wrappedScanResult.deviceType in DeviceManager.appleDeviceTypesWithRotatingIdentifier) {
+                            Timber.d("Called rotating identifier algorithm for Apple device ${wrappedScanResult.uniqueIdentifier} ${wrappedScanResult.deviceType} ${wrappedScanResult.connectionState}")
+                            val connectionStateString = Utility.connectionStateToString(wrappedScanResult.connectionState)
+                            val timeTolerance: Long = 5 // in minutes (±5 min tolerance)
+                            val baseInterval: Long = 15 // in minutes (Apple rotates every ~15 min)
+                            // Look back up to (2 * baseInterval + timeTolerance) = 35 minutes to
+                            // accommodate both normal rotations (~15 min ago) and missed scan cycles
+                            // (~30 min ago), with ±5 min tolerance. This mirrors the Samsung
+                            // non-strict algorithm timing.
+                            val since = discoveryDate.minusMinutes(baseInterval + baseInterval + timeTolerance)
+                            val until = discoveryDate.minusMinutes(baseInterval - timeTolerance)
+
+                            deviceRepository.getDeviceWithRecentBeacon(
+                                deviceType = wrappedScanResult.deviceType,
+                                additionalData = connectionStateString,
+                                since = since,
+                                until = until
+                            )?.let {
+                                Timber.d("Apple device already in the database with rotating identifier... Updating the last seen date!")
+                                device = it
+                                device.lastSeen = discoveryDate
+                                device.matchedUsing15MinAlgo = true
+                                deviceRepository.update(device)
+                                return@withLock device
                             }
                         }
 

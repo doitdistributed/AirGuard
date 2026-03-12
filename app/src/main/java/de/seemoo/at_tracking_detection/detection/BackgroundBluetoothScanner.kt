@@ -414,10 +414,11 @@ object BackgroundBluetoothScanner {
                 if (wrappedScanResult.connectionState !in DeviceManager.unsafeConnectionState && wrappedScanResult.deviceType in DeviceManager.savedDeviceTypesWith15MinuteAlgorithm && wrappedScanResult.connectionState in DeviceManager.savedConnectionStatesWith15MinuteAlgorithm){
                     Timber.d("Device ${wrappedScanResult.uniqueIdentifier} ${wrappedScanResult.deviceType} ${wrappedScanResult.connectionState} is in a saved connection state for the 15 Minute Algorithm!")
                     overrideIdentifier = deviceSaved.address
-                } else if (deviceSaved.matchedUsing15MinAlgo && wrappedScanResult.deviceType in DeviceManager.appleDeviceTypesWithRotatingIdentifier) {
-                    // Apple device was matched to a previous entry via the rotating identifier algorithm.
-                    // Use the saved device's address so that beacons are correctly associated with the
-                    // original device entry rather than the rotated MAC address.
+                } else if (wrappedScanResult.deviceType in DeviceManager.appleDeviceTypesWithRotatingIdentifier && deviceSaved.address != wrappedScanResult.uniqueIdentifier) {
+                    // Apple device was matched to an existing entry via either the exact advertisement
+                    // key or the probabilistic time-window algorithm. In both cases the current scan
+                    // MAC differs from the device's stored address, so we must redirect beacons to
+                    // the stored address to keep all observations under one device entry.
                     Timber.d("Apple device matched via rotating identifier algorithm! Using saved device's address for beacon.")
                     overrideIdentifier = deviceSaved.address
                 }
@@ -570,6 +571,28 @@ object BackgroundBluetoothScanner {
                         // (similar to Samsung non-strict) to re-identify them across rotations.
                         if (wrappedScanResult.deviceType in DeviceManager.appleDeviceTypesWithRotatingIdentifier) {
                             Timber.d("Called rotating identifier algorithm for Apple device ${wrappedScanResult.uniqueIdentifier} ${wrappedScanResult.deviceType} ${wrappedScanResult.connectionState}")
+
+                            // First try an exact match on the rotating public key (alternative
+                            // identifier). Two scans within the same ~15 min rotation window will
+                            // have the same key and can be matched precisely without the uncertainty
+                            // of the time-window algorithm.
+                            val alternativeIdentifier = wrappedScanResult.alternativeIdentifier
+                            if (alternativeIdentifier != null) {
+                                deviceRepository.getDeviceWithAlternativeIdentifier(alternativeIdentifier)?.let {
+                                    Timber.d("Apple device already in the database with matching advertisement key... Updating the last seen date!")
+                                    device = it
+                                    device.lastSeen = discoveryDate
+                                    // Keep the stored alternativeIdentifier — it is the same key that
+                                    // matched, so no update is needed here.
+                                    deviceRepository.update(device)
+                                    return@withLock device
+                                }
+                            }
+
+                            // No exact key match — the key has rotated since last observation.
+                            // Fall back to a time-window based match (same device type + connection
+                            // state, last seen 10–35 min ago). This is a probabilistic match, so
+                            // matchedUsing15MinAlgo is set to signal downstream logic.
                             val connectionStateString = Utility.connectionStateToString(wrappedScanResult.connectionState)
                             val timeTolerance: Long = 5 // in minutes (±5 min tolerance)
                             val baseInterval: Long = 15 // in minutes (Apple rotates every ~15 min)
@@ -590,6 +613,11 @@ object BackgroundBluetoothScanner {
                                 device = it
                                 device.lastSeen = discoveryDate
                                 device.matchedUsing15MinAlgo = true
+                                // Update the stored key to the newly seen key so subsequent exact
+                                // matches within this new rotation window succeed immediately.
+                                if (alternativeIdentifier != null) {
+                                    device.alternativeIdentifier = alternativeIdentifier
+                                }
                                 deviceRepository.update(device)
                                 return@withLock device
                             }
@@ -705,6 +733,15 @@ object BackgroundBluetoothScanner {
                 } else {
                     Timber.d("Device already in the database... Updating the last seen date!")
                     device.lastSeen = discoveryDate
+                    // For Apple devices, update the alternativeIdentifier (rotating advertisement key)
+                    // so it always reflects the currently active key. This is used both for export
+                    // display and for exact-match identification within the current rotation window.
+                    if (wrappedScanResult.deviceType in DeviceManager.appleDeviceTypesWithRotatingIdentifier) {
+                        val newKey = wrappedScanResult.alternativeIdentifier
+                        if (newKey != null) {
+                            device.alternativeIdentifier = newKey
+                        }
+                    }
                     deviceRepository.update(device)
                 }
 

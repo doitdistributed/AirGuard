@@ -193,6 +193,7 @@ data class BaseDevice(
         fun getAlternativeIdentifier(scanResult: ScanResult, deviceType: DeviceType = DeviceManager.getDeviceType(scanResult)): String? {
             return when (deviceType) {
                 DeviceType.GOOGLE_FIND_MY_NETWORK -> GoogleFindMyNetwork.getAlternativeIdentifier(scanResult)
+                DeviceType.AIRTAG, DeviceType.FIND_MY -> AirTag.getAlternativeIdentifier(scanResult)
                 else -> null
             }
         }

@@ -74,7 +74,16 @@ class ExportDeviceViewModel : ViewModel() {
 
             infoBuilder.append(context.getString(R.string.export_trackers_tracker_type, deviceTypeStr)).append("\n")
             if (device.deviceType != DeviceType.SAMSUNG_TRACKER && device.deviceType != DeviceType.SAMSUNG_FIND_MY_MOBILE) {
-                infoBuilder.append(context.getString(R.string.export_trackers_mac, device.address)).append("\n")
+                if (device.deviceType == DeviceType.AIRTAG || device.deviceType == DeviceType.FIND_MY) {
+                    // Apple devices use a rotating MAC address and a rotating advertisement key.
+                    // Show the advertisement key (alternativeIdentifier) when available, since it is
+                    // the actual per-device identifier used in the Find My network. Fall back to the
+                    // Bluetooth address when the key is not available (e.g. device was connected).
+                    val displayId = device.alternativeIdentifier ?: device.address
+                    infoBuilder.append(context.getString(R.string.export_trackers_identifier, displayId)).append("\n")
+                } else {
+                    infoBuilder.append(context.getString(R.string.export_trackers_mac, device.address)).append("\n")
+                }
             }
             infoBuilder.append(context.getString(R.string.export_trackers_first_seen, firstSeenDate)).append("\n")
             infoBuilder.append(context.getString(R.string.export_trackers_last_seen, lastSeenDate)).append("\n")

@@ -418,7 +418,7 @@
     <string name="article_offline_header">No internet connection</string>
     <string name="article_offline_text">You are currently not connected to the internet. You will find articles that will help you navigate the app here when you are connected to the internet.</string>
 
-    <string name="explanation_apple">Please note:\nApple devices change their identifier over time.\nAirTags, AirPods, FindMy and other Apple devices are recognized as new devices periodically and can be displayed multiple times.</string>
+    <string name="explanation_apple">Please note:\nApple devices (AirTags, AirPods, FindMy accessories) change their Bluetooth identifier approximately every 15 minutes.\nAirGuard tries to match observations across these rotations automatically. In rare cases, a single device may still appear as multiple entries.</string>
     <string name="explanation_samsung">Please note:\nSamsung devices change their identifier over time.\nSmartTags and other Samsung SmartThings devices are recognized as new devices periodically and can be displayed multiple times.</string>
     <string name="explanation_tile">Please note:\nTile devices do not change their identifier.\nThis can lead to false warnings.\nIn case of a warning, please check if the device is not carried by someone around you (friends, family, colleges, neighbours etc.).</string>
     <string name="explanation_chipolo">Please note:\nChipolo devices do not change their identifier.\nThis can lead to false warnings.\nIn case of a warning, please check if the device is not carried by someone around you (friends, family, colleges, neighbours etc.).</string>
@@ -483,6 +483,7 @@
     <string name="export_trackers_location_unknown">Location: Unknown</string>
     <string name="export_trackers_tracker_type">Tracker Type: %s</string>
     <string name="export_trackers_mac">MAC Address: %s</string>
+    <string name="export_trackers_identifier">Identifier: %s</string>
     <string name="export_trackers_last_seen">Last Seen: %s</string>
     <string name="export_trackers_first_seen">First Seen: %s</string>
     <string name="export_trackers_detections">Detections: %d</string>

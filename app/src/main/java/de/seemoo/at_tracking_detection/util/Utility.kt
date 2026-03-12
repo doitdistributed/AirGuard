@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothGattCallback
 import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.BluetoothManager
 import android.bluetooth.BluetoothProfile
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -142,9 +143,27 @@ object Utility {
         map.overlays.add(copyrightOverlay)
     }
 
+    /**
+     * Opens an external navigation app (e.g. Google Maps) with directions to the given coordinates.
+     * Falls back to a Google Maps web URL if no navigation app is installed.
+     */
+    fun openNavigationToLocation(context: Context, latitude: Double, longitude: Double) {
+        val uri = "geo:$latitude,$longitude?q=$latitude,$longitude".toUri()
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+        try {
+            context.startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            Timber.w("No navigation app found, falling back to browser")
+            val webUri = "https://maps.google.com/maps?daddr=$latitude,$longitude".toUri()
+            val webIntent = Intent(Intent.ACTION_VIEW, webUri)
+            context.startActivity(webIntent)
+        }
+    }
+
     fun setGeoPointsFromListOfLocations(
         locationList: List<Location>,
         map: MapView,
+        onMarkerClick: ((latitude: Double, longitude: Double) -> Unit)? = null,
     ): Boolean {
         val context = ATTrackingDetectionApplication.getAppContext()
 
@@ -227,8 +246,13 @@ object Utility {
                 geoPointList.add(geoPoint)
 
                 marker.setOnMarkerClickListener { clickedMarker, _ ->
-                    clickedMarker.closeInfoWindow()
-                    false
+                    if (onMarkerClick != null) {
+                        onMarkerClick(location.latitude, location.longitude)
+                        true
+                    } else {
+                        clickedMarker.closeInfoWindow()
+                        false
+                    }
                 }
 
                 clusterer.add(marker)

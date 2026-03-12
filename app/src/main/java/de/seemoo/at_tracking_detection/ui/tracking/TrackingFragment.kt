@@ -202,6 +202,10 @@ class TrackingFragment : Fragment() {
             }
         }
 
+        view.findViewById<CardView>(R.id.tracking_navigate_to_tracker).setOnClickListener {
+            navigateToTrackerLastLocation()
+        }
+
         view.findViewById<CardView>(R.id.tracking_play_sound).setOnClickListener {
             handlePlaySound()
         }
@@ -212,7 +216,9 @@ class TrackingFragment : Fragment() {
             lifecycleScope.launch {
                 trackingViewModel.isMapLoading.postValue(true)
                 val locationList = Utility.fetchLocationListFromBeaconList(beacons)
-                Utility.setGeoPointsFromListOfLocations(locationList, mapView)
+                Utility.setGeoPointsFromListOfLocations(locationList, mapView) { lat, lng ->
+                    Utility.openNavigationToLocation(requireContext(), lat, lng)
+                }
                 trackingViewModel.isMapLoading.postValue(false)
             }
         }
@@ -295,7 +301,9 @@ class TrackingFragment : Fragment() {
         lifecycleScope.launch {
             trackingViewModel.isMapLoading.postValue(true)
             val locationList = Utility.fetchLocationListFromBeaconList(trackingViewModel.markerLocations.value ?: emptyList())
-            Utility.setGeoPointsFromListOfLocations(locationList, mapView)
+            Utility.setGeoPointsFromListOfLocations(locationList, mapView) { lat, lng ->
+                Utility.openNavigationToLocation(requireContext(), lat, lng)
+            }
             trackingViewModel.isMapLoading.postValue(false)
         }
     }
@@ -322,6 +330,25 @@ class TrackingFragment : Fragment() {
         val directions: NavDirections =
             TrackingFragmentDirections.actionTrackingToExportDevice(deviceAddress)
         findNavController().navigate(directions)
+    }
+
+    private fun navigateToTrackerLastLocation() {
+        val beacons = trackingViewModel.markerLocations.value ?: emptyList()
+        val lastBeacon = beacons.maxByOrNull { it.receivedAt }
+        val locationId = lastBeacon?.locationId?.takeIf { it != 0 }
+        if (locationId != null) {
+            lifecycleScope.launch {
+                val locationRepository = ATTrackingDetectionApplication.getCurrentApp().locationRepository
+                val location = locationRepository.getLocationWithId(locationId)
+                if (location != null) {
+                    Utility.openNavigationToLocation(requireContext(), location.latitude, location.longitude)
+                } else {
+                    Snackbar.make(requireView(), getString(R.string.navigate_no_location_available), Snackbar.LENGTH_LONG).show()
+                }
+            }
+        } else {
+            Snackbar.make(requireView(), getString(R.string.navigate_no_location_available), Snackbar.LENGTH_LONG).show()
+        }
     }
 
     private fun handlePlaySound() {

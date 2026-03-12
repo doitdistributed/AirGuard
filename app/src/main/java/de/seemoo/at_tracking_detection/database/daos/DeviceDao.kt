@@ -35,9 +35,6 @@ interface DeviceDao {
     @Query("SELECT * FROM device WHERE `ignore` == 1 ORDER BY lastSeen DESC")
     fun getIgnoredSync(): List<BaseDevice>
 
-    @Query("SELECT * FROM device WHERE safeTracker == 1 ORDER BY lastSeen DESC")
-    fun getSafeTrackers(): Flow<List<BaseDevice>>
-
     @Query("SELECT COUNT(*) FROM device WHERE safeTracker == 1")
     fun getCountSafeTrackers(): Flow<Int>
 

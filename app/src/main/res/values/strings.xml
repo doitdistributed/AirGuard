@@ -381,6 +381,10 @@
     <string name="export_device_title">Export Device to PDF</string>
     <string name="export_device_subtitle">Create a PDF file summary about this tracker</string>
 
+    <string name="navigate_to_tracker_title">Navigate to Tracker</string>
+    <string name="navigate_to_tracker_subtitle">Open navigation to the tracker\'s last known location</string>
+    <string name="navigate_no_location_available">No location available for this tracker</string>
+
     <string name="observe_tracker_title">Observe Tracker</string>
     <string name="observe_tracker_clock_description">Image of a clock</string>
     <string name="observe_tracker_start_observation">Start Observation</string>

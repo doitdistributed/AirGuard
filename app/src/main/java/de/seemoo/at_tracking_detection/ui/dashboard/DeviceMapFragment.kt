@@ -118,7 +118,9 @@ class DeviceMapFragment : Fragment() {
             }
 
             try {
-                Utility.setGeoPointsFromListOfLocations(locationList, map)
+                Utility.setGeoPointsFromListOfLocations(locationList, map) { lat, lng ->
+                    Utility.openNavigationToLocation(requireContext(), lat, lng)
+                }
             } finally {
                 viewModel.isMapLoading.postValue(false)
             }

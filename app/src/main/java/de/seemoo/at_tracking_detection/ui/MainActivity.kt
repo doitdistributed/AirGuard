@@ -83,7 +83,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         val navController = navHostFragment.navController
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
-        val appBarItems: Set<Int> = setOf(
+        val appBarItems = setOf(
             R.id.navigation_manual_scan,
             R.id.navigation_safeDevicesFragment,
             R.id.navigation_settings

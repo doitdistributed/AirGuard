@@ -2,6 +2,8 @@ package de.seemoo.at_tracking_detection.ui.tracking
 
 import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -174,7 +176,32 @@ class TrackingFragment : Fragment() {
         trackingViewModel.deviceType.observe(viewLifecycleOwner) { deviceType ->
             view.findViewById<TextView>(R.id.identifier_explanation).text =
                 Utility.getExplanationTextForDeviceType(deviceType)
+            val labelRes = when (deviceType) {
+                DeviceType.AIRTAG, DeviceType.FIND_MY -> R.string.identifier_row_label
+                else -> R.string.identifier_row_mac_label
+            }
+            view.findViewById<TextView>(R.id.identifier_label_text).setText(labelRes)
         }
+
+        val identifierCard = view.findViewById<View>(R.id.identifier_card)
+        val identifierCopyButton = view.findViewById<ImageButton>(R.id.identifier_copy_button)
+
+        val copyIdentifierToClipboard = View.OnClickListener {
+            val identifier = trackingViewModel.deviceIdentifier.value ?: return@OnClickListener
+            val labelRes = when (trackingViewModel.deviceType.value) {
+                DeviceType.AIRTAG, DeviceType.FIND_MY -> R.string.identifier_row_label
+                else -> R.string.identifier_row_mac_label
+            }
+            val label = getString(labelRes)
+            val clipboard = requireContext().getSystemService(Context.CLIPBOARD_SERVICE)
+                    as ClipboardManager
+            val clip = ClipData.newPlainText(label, identifier)
+            clipboard.setPrimaryClip(clip)
+            Snackbar.make(requireView(), getString(R.string.identifier_copied), Snackbar.LENGTH_SHORT).show()
+        }
+
+        identifierCard.setOnClickListener(copyIdentifierToClipboard)
+        identifierCopyButton.setOnClickListener(copyIdentifierToClipboard)
 
         view.findViewById<View>(R.id.manufacturer_website).setOnClickListener {
             trackingViewModel.clickOnWebsite(requireContext())

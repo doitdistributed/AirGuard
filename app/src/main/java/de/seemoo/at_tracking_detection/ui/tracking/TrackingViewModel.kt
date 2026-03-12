@@ -77,6 +77,21 @@ class TrackingViewModel @Inject constructor(
 
     val deviceComment = MutableLiveData<String>("")
 
+    /**
+     * The identifier to display in the device detail UI. Returns null for device types where
+     * the identifier should not be exposed (Samsung trackers use an internal public key).
+     * - Apple (AirTag / FindMy): rotating advertisement key hex when available, else MAC address
+     * - All others: Bluetooth MAC address
+     */
+    val deviceIdentifier: LiveData<String?> = device.map { dev ->
+        if (dev == null) return@map null
+        when (dev.deviceType) {
+            DeviceType.SAMSUNG_TRACKER, DeviceType.SAMSUNG_FIND_MY_MOBILE -> null
+            DeviceType.AIRTAG, DeviceType.FIND_MY -> dev.alternativeIdentifier ?: dev.address
+            else -> dev.address
+        }
+    }
+
     fun loadDevice(address: String, deviceTypeOverride: DeviceType) {
         deviceAddress.postValue(address)
         deviceType.postValue(deviceTypeOverride)

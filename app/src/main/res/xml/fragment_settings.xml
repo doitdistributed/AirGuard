@@ -163,4 +163,10 @@
         android:title="@string/onboarding_setting_title"
         app:isPreferenceVisible="@bool/debug" />
 
+    <Preference
+        android:icon="@drawable/ic_baseline_bug_report_24"
+        android:key="open_debug"
+        android:summary="@string/settings_debug_summary"
+        android:title="@string/title_debug" />
+
 </PreferenceScreen>

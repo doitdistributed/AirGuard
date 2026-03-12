@@ -305,6 +305,7 @@
     <string name="survey_settings_title">Survey on stalking and location tracking</string>
     <string name="onboarding_setting_summary">Show the app onboarding procedure on the next launch of the app</string>
     <string name="onboarding_setting_title">Show Onboarding</string>
+    <string name="settings_debug_summary">Access developer debug tools</string>
     <string name="device_name_chipolo" translatable="false">Chipolo %s</string>
     <string name="bluetooth_off_explanation">Bluetooth is turned off. This app requires Bluetooth to scan for nearby trackers.</string>
     <string name="location_off_explanation">Location is turned off. This app requires the location permission to scan for nearby trackers. Please turn on location in your system settings.\n\nIt is possible that you have to restart the App for this to have an effect.</string>

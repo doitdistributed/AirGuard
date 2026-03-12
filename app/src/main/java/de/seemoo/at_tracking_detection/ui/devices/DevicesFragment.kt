@@ -179,7 +179,7 @@ abstract class DevicesFragment(
             .build()
         if (showSafeDevices) {
             addTrackerFab.visibility = View.VISIBLE
-            showAllButton.visibility = View.GONE
+            showAllButton.visibility = View.INVISIBLE
             addTrackerFab.setOnClickListener {
                 findNavController().navigate(R.id.navigation_manual_scan, null, scanNavOptions)
             }

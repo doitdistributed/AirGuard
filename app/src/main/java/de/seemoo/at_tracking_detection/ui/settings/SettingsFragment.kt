@@ -135,12 +135,16 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
 
 
-        findPreference<Preference>("open_debug")?.isVisible = BuildConfig.DEBUG || SharedPrefs.advancedMode
+        findPreference<Preference>("open_debug")?.isVisible = BuildConfig.DEBUG
 
         findPreference<Preference>("open_debug")?.onPreferenceClickListener =
             Preference.OnPreferenceClickListener {
-                view?.findNavController()?.navigate(R.id.action_settings_to_debug)
-                true
+                if (BuildConfig.DEBUG) {
+                    view?.findNavController()?.navigate(R.id.action_settings_to_debug)
+                    true
+                } else {
+                    false
+                }
             }
 
         findPreference<Preference>("information_contact")?.onPreferenceClickListener =
@@ -256,7 +260,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             findPreference<SwitchPreferenceCompat>("show_onboarding")?.isVisible = true
             findPreference<SwitchPreferenceCompat>("deactivate_background_scanning")?.isVisible = true
             findPreference<Preference>("old_device_cleanup")?.isVisible = true
-            findPreference<Preference>("open_debug")?.isVisible = true
+            findPreference<Preference>("open_debug")?.isVisible = BuildConfig.DEBUG
         } else {
             Timber.d("Disabled advanced mode!")
             findPreference<SwitchPreferenceCompat>("use_location")?.isVisible = false

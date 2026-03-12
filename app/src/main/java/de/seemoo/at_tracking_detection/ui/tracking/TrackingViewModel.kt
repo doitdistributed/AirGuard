@@ -19,6 +19,7 @@ import timber.log.Timber
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
+import java.util.UUID
 import javax.inject.Inject
 import androidx.core.net.toUri
 
@@ -138,13 +139,23 @@ class TrackingViewModel @Inject constructor(
                 // Create a minimal entry so the flag can be persisted.
                 val now = LocalDateTime.now()
                 val newDevice = BaseDevice(
+                    deviceId = 0,
+                    uniqueId = UUID.randomUUID().toString(),
                     address = address,
+                    name = null,
                     ignore = false,
-                    connectable = false,
+                    connectable = null, // unknown — prevents participation in connectable-based device matching
                     payloadData = null,
                     firstDiscovery = now,
                     lastSeen = now,
-                    deviceType = deviceType.value ?: DeviceType.UNKNOWN
+                    notificationSent = false,
+                    lastNotificationSent = null,
+                    deviceType = deviceType.value ?: DeviceType.UNKNOWN,
+                    riskLevel = 0,
+                    lastCalculatedRiskDate = now,
+                    nextObservationNotification = null,
+                    currentObservationDuration = null,
+                    additionalData = null,
                 )
                 deviceRepository.insert(newDevice)
                 Timber.d("Created device entry for $address before toggling safe-tracker flag")

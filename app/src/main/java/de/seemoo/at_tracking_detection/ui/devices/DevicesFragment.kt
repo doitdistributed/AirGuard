@@ -79,6 +79,8 @@ abstract class DevicesFragment(
                     DeviceManager.devices.map { it.deviceType }.toSet()
                 )
             )
+            // Ensure the info text does not incorrectly state "All Devices" when SafeTrackerFilter is active
+            deviceInfoText = R.string.info_text_only_trackers
         } else if (!showDevicesFound) {
             activity?.setTitle(R.string.title_ignored_devices)
             emptyListText = R.string.ignored_device_list_empty
